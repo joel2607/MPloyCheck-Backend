@@ -29,7 +29,7 @@ export const AuthService = {
     await newUser.save();
 
 
-    const token = jwt.sign({ userID: newUser._id, role: newUser.role }, envHandler.JWT_KEY, {
+    const token = jwt.sign({ userId: newUser._id, role: newUser.role }, envHandler.JWT_KEY, {
       expiresIn: "7d",
     });
 
@@ -52,7 +52,7 @@ export const AuthService = {
       throw new ErrorBadRequest("Invalid password");
     }
 
-    const token = jwt.sign({ userID: user._id, role: user.role }, envHandler.JWT_KEY, {
+    const token = jwt.sign({ userId: user._id, role: user.role }, envHandler.JWT_KEY, {
       expiresIn: "7d",
     });
 

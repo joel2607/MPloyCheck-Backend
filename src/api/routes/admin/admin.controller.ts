@@ -1,16 +1,15 @@
+import { saveValue } from "../../../helpers/localStorage";
 import catchAsync from "../../../helpers/catchAsync";
 import type { Response, Request } from "express";
-// import { ErrorBadRequest } from "../../../helpers/errors";
-import storage from 'node-persist';
 
 export const AdminController = {
-  SetDelay: catchAsync(async (_req: Request, res: Response) => {
-    
-    
-    await storage.setItem('key', 'value');
+  SetDelay: catchAsync(async (req: Request, res: Response) => {
+
+    saveValue('delay', req.body.value);
 
     return res.json({
-        message: "Delay set."
+        message: "Delay set.",
+        delay: req.body.value
     });
   }),  
 

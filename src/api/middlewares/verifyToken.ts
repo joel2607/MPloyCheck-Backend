@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import { ErrorUnauthorized, ErrorNotFound } from '../../helpers/errors';
 import User from '../../models/user';
 import { JwtPayload } from 'jsonwebtoken';
+import envHandler from '../../config/envHandler';
 
 interface AuthenticatedRequest extends Request {
   user?: JwtPayload;
@@ -11,7 +12,6 @@ interface AuthenticatedRequest extends Request {
 // Middleware to verify JWT and check for admin role
 const verifyToken = async (req: AuthenticatedRequest, _res: Response, next: NextFunction) => {
   try {
-    // Get the authorization header
     const authHeader = req.headers.authorization;
     
     // Check if authorization header exists
@@ -26,31 +26,23 @@ const verifyToken = async (req: AuthenticatedRequest, _res: Response, next: Next
       throw new ErrorUnauthorized('Token not provided');
     }
     
-    // Verify the token
-    // Note: JWT_SECRET should be stored in environment variables
-    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as JwtPayload;
+    const decoded = jwt.verify(token, envHandler["JWT_KEY"]) as JwtPayload;
     
     // Store the decoded user in the request object for use in subsequent middleware or route handlers
     req.user = decoded;
     
-    // This is where you would typically call the database to verify the user still exists
-    // and has valid permissions. For example:
-    // 
-    const user = await User.findById(decoded.id);
+
+    const user = await User.findOne({ _id: decoded.userId });
     if (!user) {
       throw new ErrorNotFound('User no longer exists in the system');
-    }
-    
-    if (decoded.role !== 'admin') {
-      throw new ErrorUnauthorized('Access denied: Admin role required');
     }
     
     next();
   } catch (error) {
     if (error instanceof jwt.JsonWebTokenError) {
-      next(new ErrorUnauthorized('Invalid token'));
+      next(new ErrorUnauthorized(`Invalid token: ${error.message}`));
     } else if (error instanceof jwt.TokenExpiredError) {
-      next(new ErrorUnauthorized('Token has expired'));
+      next(new ErrorUnauthorized(`Token has expired: ${error.message}`));
     } else {
       next(error);
     }
