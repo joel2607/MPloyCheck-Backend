@@ -27,6 +27,8 @@ export const AuthService = {
     });
 
     await newUser.save();
+
+
     const token = jwt.sign({ userID: newUser._id, role: newUser.role }, envHandler.JWT_KEY, {
       expiresIn: "7d",
     });

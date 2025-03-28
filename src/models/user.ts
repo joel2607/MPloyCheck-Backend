@@ -22,7 +22,6 @@ const userSchema = new mongoose.Schema<UserType>({
 userSchema.set("toJSON", {
   transform: (_doc, ret, _options) => {
     ret.passwordHash = undefined;
-    ret._id = undefined;
     ret.__v = undefined;
     return ret;
   },

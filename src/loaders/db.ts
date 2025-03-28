@@ -8,7 +8,7 @@ async function connectToDB(): Promise<void> {
   const url = `${DB_URL}/${DB_DATABASE}`
   try {
     await mongoose.connect(url);
-    console.log("Connected to Database!");
+    console.log(`Connected to Database at ${url}`);
   } catch (error: unknown) {
     if (error instanceof Error) {
       console.error(`Error connecting to the database: ${error.message}`);
